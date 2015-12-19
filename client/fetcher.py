@@ -18,7 +18,7 @@ class Fetcher(Thread):
             if len(demande) == 0:
                 continue
             msg = self.conn.recv(SIZE).decode()
-            print("Commande du serveur: "+msg)
+            #print("Commande du serveur: "+msg)
             if len(msg) == 0:
                 self.stop()
             if msg[:3] == "MSG":
@@ -27,7 +27,9 @@ class Fetcher(Thread):
                 message = "\\".join(l[1:])
                 self.write(pseudo+": "+message)
             elif msg[:3] == "ERR":
-                print("Erreur: "+msg[4:])
+                self.write("Erreur: "+msg[4:])
+            else:
+                self.write("Message inconnu du serveur: "+msg)
         print("Fin du fetcher")
 
     def stop(self):

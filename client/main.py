@@ -16,10 +16,13 @@ class Getter(Thread):
         self.conn = conn
     def run(self):
         while self.continuer:
-            demande = select.select([self.conn],[],[],0.2)
+            demande = select.select([self.conn],[],[],0.2)[0]
             print("lulu")
+            print(demande)
             if len(demande) == 0:
+                print("OK")
                 continue
+            print("HO!")
             msg = self.conn.recv(SIZE).decode()
             print("Commande du serveur: "+msg)
             if len(msg) == 0:

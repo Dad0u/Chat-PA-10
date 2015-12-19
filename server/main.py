@@ -11,7 +11,10 @@ import select
 import sys
 
 
-def send_to_all(msg, sender):
+def send_to_all(msg, sender=None):
+    if sender == None:
+        for cl in client:
+            cl.conn.send(msg.encode())
     if not sender.logged:
         if OPEN:
             sender.conn.send("ERR You must choose a nickname first, use /nick <nickname> to do so".encode('utf-8'))
@@ -34,10 +37,19 @@ def change_nick(cl, nick):
         cl.conn.send('ERR Invalid character in nickname')
         return
     else:
+        old_nick = cl.nick
         cl.set_nick(nick)
-        cl.conn.send(b"MSG Succesfully changed your nickname to "+nick.encode())
+        if cl.logged:
+            s = "NFO "+old_nick+" is now known as "+nick
+            print('Nouveau pseudo de {}: {}'.format(old_nick,nick))
+            s = s.encode('utf-8')
+            send_to_all(s)
+        else:
+            print('Le client {} a choisi le pseudo {}'.format(cl.ip,nick))
+            cl.conn.send(b"NFO Succesfully changed your nickname to "+nick.encode())
         if OPEN:
             cl.logged = True
+            cl.conn.send(b'NFO You are now logged in')
 
 
         
@@ -78,6 +90,7 @@ while consoleinput.continuer:
             elif action == TOSELF:
                 cl.conn.send(s)
             elif action == CHGNICK:
+                
                 change_nick(cl,s)
 
 

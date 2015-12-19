@@ -28,6 +28,8 @@ class Fetcher(Thread):
                 self.write(pseudo+": "+message)
             elif msg[:3] == "ERR":
                 self.write("Erreur: "+msg[4:])
+            elif msg[:3] == "NFO":
+                self.write("Info: "+msg[4:])
             else:
                 self.write("Message inconnu du serveur: "+msg)
         print("Fin du fetcher")

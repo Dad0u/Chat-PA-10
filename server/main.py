@@ -15,6 +15,7 @@ def send_to_all(msg, sender=None):
     if sender == None:
         for cl in client:
             cl.conn.send(msg.encode())
+        return
     if not sender.logged:
         if OPEN:
             sender.conn.send("ERR You must choose a nickname first, use /nick <nickname> to do so".encode('utf-8'))
@@ -42,13 +43,14 @@ def change_nick(cl, nick):
         if cl.logged:
             s = "NFO "+old_nick+" is now known as "+nick
             print('Nouveau pseudo de {}: {}'.format(old_nick,nick))
-            s = s.encode('utf-8')
+            #s = s.encode('utf-8')
             send_to_all(s)
         else:
             print('Le client {} a choisi le pseudo {}'.format(cl.ip,nick))
             cl.conn.send(b"NFO Succesfully changed your nickname to "+nick.encode())
-        if OPEN:
+        if OPEN and cl.logged == False:
             cl.logged = True
+            send_to_all('NFO '+cl.nick+' joined the chat.')
             cl.conn.send(b'NFO You are now logged in')
 
 
@@ -83,14 +85,16 @@ while consoleinput.continuer:
 
             action, s = process_cmd(msg)
             if action == DISC:
+                if cl.logged:
+                    send_to_all("NFO "+cl.nick+" left the chat.")
                 cl.disconnect()
                 client.remove(cl)
             elif action == TOALL:
+                print(cl.nick+": "+s)
                 send_to_all(s,cl)
             elif action == TOSELF:
                 cl.conn.send(s)
             elif action == CHGNICK:
-                
                 change_nick(cl,s)
 
 

@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-
-#import socket
 import select
 from threading import Thread
 from glob import *

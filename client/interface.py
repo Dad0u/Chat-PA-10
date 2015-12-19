@@ -50,7 +50,7 @@ class Fenetre():
         elif s == "EXIT":
             self.close()
         else:
-            self.conn.send(s.encode())
+            self.conn.send(s.encode('utf-8'))
 
     def receive(self, msg):
         print(msg)

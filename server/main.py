@@ -37,11 +37,11 @@ class Client():
 
     def set_nick(self, nick):
         if nick in [i.nick for i in client]:
-            self.conn.send(b"MSG Pseudo déjà pris !")
+            self.conn.send("ERR Pseudo déjà pris !".encode('utf-8'))
         elif len(nick) < 3:
-            self.conn.send(b"MSG Pseudo trop court !")
+            self.conn.send("ERR Pseudo trop court !".encode('utf-8'))
         elif "\\" in nick:
-            self.conn.send(b"MSG Caractère invalide dans le pseudo")
+            self.conn.send("ERR Caractère invalide dans le pseudo".encode('utf-8'))
         else:
             self.nick = nick
             self.logged = True
@@ -79,8 +79,9 @@ while continuer:
         if cl.isTalking():
             print(cl.ip+" is talking!")
             try:
-                msg = cl.conn.recv(SIZE).decode()
+                msg = cl.conn.recv(SIZE).decode('utf-8')
             except:
+                print("Recu un paquet bizarre ! on kicke !")
                 cl.disconnect()
             print(msg)
             if len(msg) == 0:
@@ -90,7 +91,7 @@ while continuer:
                 message = msg[4:]
                 print(cl.nick+": "+message)
                 s = "MSG "+cl.nick+"\\"+message
-                s = s.encode()
+                s = s.encode('utf-8')
                 for i in client:
                     i.conn.send(s)
             elif msg[:3] == "NIK":

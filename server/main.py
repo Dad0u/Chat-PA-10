@@ -35,6 +35,7 @@ def change_nick(cl, nick):
         return
     else:
         cl.set_nick(nick)
+        cl.conn.send(b"MSG Succesfully changed your nickname to "+nick.encode())
         if OPEN:
             cl.logged = True
 

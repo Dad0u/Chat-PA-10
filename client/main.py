@@ -2,15 +2,10 @@
 
 
 import socket
-from time import *
 import sys
 import select
 from interface import Fenetre
-#from fetcher import Fetcher
 from glob import *
-
-PORT = 1148
-SIZE = 2048
 
 
 def auth(connection):
@@ -33,9 +28,6 @@ connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection.connect((address, PORT))
 
 auth(connection)
-
-
-
 
 fen = Fenetre(connection)
 fen.run()

@@ -1,4 +1,6 @@
-﻿from threading import Thread
+﻿# -*- coding:utf-8 -*-
+
+from threading import Thread
 import socket
 #from time import sleep
 import signal
@@ -51,6 +53,11 @@ class Client():
         else:
             return True
 
+    def disconnect(self):
+        print("Deconnexion de "+self.nick)
+        self.conn.close()
+        client.remove(cl)
+
         
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_serv.bind(('', PORT))
@@ -71,12 +78,13 @@ while continuer:
     for cl in client:
         if cl.isTalking():
             print(cl.ip+" is talking!")
-            msg = cl.conn.recv(SIZE).decode()
+            try:
+                msg = cl.conn.recv(SIZE).decode()
+            except:
+                cl.disconnect()
             print(msg)
             if len(msg) == 0:
-                print("Déconnexion de "+cl.nick)
-                cl.conn.close()
-                client.remove(cl)
+                cl.disconnect()
                 continue
             if msg[:3] == "MSG":
                 message = msg[4:]

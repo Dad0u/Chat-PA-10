@@ -1,62 +1,43 @@
 ﻿# -*- coding:utf-8 -*-
 
-from threading import Thread
+#from threading import Thread
 import socket
-#from time import sleep
-import signal
+from client import Client
+from consoleInput import ConsoleInput
+from process_cmd import process_cmd
+from glob import *
+
 import select
 import sys
 
-PORT = 1148
-SIZE = 2048
 
-class ConsoleInput(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        self.continuer = True
-    def run(self):
-        while self.continuer:
-            if sys.version_info.major == 2:
-                cmd = raw_input()
-            else:
-                cmd= input()
-            if cmd == "stop":
-                global continuer
-                continuer = False
-                self.stop()
-    def stop(self):
-        self.continuer = False
-
-class Client():
-    def __init__(self, conn, ip, port):
-        self.logged = False
-        self.ip = ip
-        self.conn = conn
-        self.port = port
-        self.nick = ""
-
-    def set_nick(self, nick):
-        if nick in [i.nick for i in client]:
-            self.conn.send("ERR Pseudo déjà pris !".encode('utf-8'))
-        elif len(nick) < 3:
-            self.conn.send("ERR Pseudo trop court !".encode('utf-8'))
-        elif "\\" in nick:
-            self.conn.send("ERR Caractère invalide dans le pseudo".encode('utf-8'))
+def send_to_all(msg, sender):
+    if not sender.logged:
+        if OPEN:
+            sender.conn.send("ERR You must choose a nickname first, use /nick <nickname> to do so".encode('utf-8'))
         else:
-            self.nick = nick
-            self.logged = True
+            sender.conn.send("ERR You are not logged in.".encode('utf-8'))
+        return
+    s = "MSG "+sender.nick+"\\"+msg
+    s = s.encode('utf-8')
+    for cl in client:
+        cl.conn.send(s)
 
-    def isTalking(self):
-        waiting = select.select([self.conn],[],[],0)[0]
-        if len(waiting) == 0:
-            return False
-        else:
-            return True
+def change_nick(cl, nick):
+    if nick in [i.nick for i in client]:
+        cl.conn.send('ERR Nickname already in use'.encode('utf-8'))
+        return
+    elif len(nick) < 3:
+        cl.conn.send('ERR Nickname too short (at least 3 characters)'.encode('utf-8'))
+        return
+    elif "\\" in nick:
+        cl.conn.send('ERR Invalid character in nickname')
+        return
+    else:
+        cl.set_nick(nick)
+        if OPEN:
+            cl.logged = True
 
-    def disconnect(self):
-        print("Deconnexion de "+self.nick)
-        self.conn.close()
-        client.remove(cl)
 
         
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,41 +50,37 @@ consoleinput = ConsoleInput()
 consoleinput.start()
 
 print("Serveur lancé")
-while continuer:
+while consoleinput.continuer:
     new_conn = select.select([connection_serv],[],[],0.05)[0]
     for conn in new_conn:
         c,i = conn.accept()
         client.append(Client(c, *i))
         print("Nouveau client, IP: "+client[-1].ip)
+
     for cl in client:
         if cl.isTalking():
-            print(cl.ip+" is talking!")
+            #print(cl.ip+" is talking!")
             try:
                 msg = cl.conn.recv(SIZE).decode('utf-8')
             except:
-                print("Recu un paquet bizarre ! on kicke !")
+                print("Recu un paquet bizarre, on kicke !")
                 cl.disconnect()
-            print(msg)
-            if len(msg) == 0:
-                cl.disconnect()
-                continue
-            if msg[:3] == "MSG":
-                message = msg[4:]
-                print(cl.nick+": "+message)
-                s = "MSG "+cl.nick+"\\"+message
-                s = s.encode('utf-8')
-                for i in client:
-                    i.conn.send(s)
-            elif msg[:3] == "NIK":
-                cl.set_nick(msg[4:])
-            elif msg == "HELLO":
-                print("Commande HELLO reçue")
-                cl.conn.send(b"HELLO")
+                client.remove(cl)
+            #print(msg)
 
+            action, s = process_cmd(msg)
+            if action == DISC:
+                cl.disconnect()
+                client.remove(cl)
+            elif action == TOALL:
+                send_to_all(s,cl)
+            elif action == TOSELF:
+                cl.conn.send(s)
+            elif action == CHGNICK:
+                change_nick(cl,s)
 
 
 print("Arrêt du serveur")
-consoleinput.stop()
 consoleinput.join()
 for c in client:
     c.conn.close()

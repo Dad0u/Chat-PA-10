@@ -90,7 +90,7 @@ while consoleinput.continuer:
                 client.remove(cl)
             queue = []
             while msg != b'':
-                print(msg)
+                #print(msg)
                 longueur = 256*msg[0]+msg[1]
                 if longueur > 1024:
                     print('/!\\ Oddly long message incoming ({} bytes).'.format(longueur))
@@ -105,7 +105,7 @@ while consoleinput.continuer:
                     cl.disconnect()
                     client.remove(cl)
                 elif action == TOALL:
-                    print(cl.nick+": "+s)
+                    print(cl.nick+" ("+cl.ip+"): "+s)
                     send_to_all(s,cl)
                 elif action == TOSELF:
                     cl.conn.send(prepare(s))

@@ -10,32 +10,40 @@ from glob import *
 import select
 import sys
 
+def prepare(s):
+    if len(s) > 2**16-3:
+        print('Message trop long !')
+    s = s[:2**16-3]
+    s = s.encode('utf-8')
+    s = bytes([len(s)//256,len(s)%256])+s
+    return(s)
+
 
 def send_to_all(msg, sender=None):
     if sender == None:
+        s = prepare(msg)
         for cl in client:
-            cl.conn.send(msg.encode())
+            cl.conn.send(s)
         return
     if not sender.logged:
         if OPEN:
-            sender.conn.send("ERR You must choose a nickname first, use /nick <nickname> to do so".encode('utf-8'))
+            sender.conn.send(prepare("ERR You must choose a nickname first, use /nick <nickname> to do so"))
         else:
-            sender.conn.send("ERR You are not logged in.".encode('utf-8'))
+            sender.conn.send(prepare("ERR You are not logged in."))
         return
-    s = "MSG "+sender.nick+"\\"+msg
-    s = s.encode('utf-8')
+    s = prepare("MSG "+sender.nick+"\\"+msg)
     for cl in client:
         cl.conn.send(s)
 
 def change_nick(cl, nick):
     if nick in [i.nick for i in client]:
-        cl.conn.send('ERR Nickname already in use'.encode('utf-8'))
+        cl.conn.send(prepare('ERR Nickname already in use'))
         return
     elif len(nick) < 3:
-        cl.conn.send('ERR Nickname too short (at least 3 characters)'.encode('utf-8'))
+        cl.conn.send(prepare('ERR Nickname too short (at least 3 characters)'))
         return
     elif "\\" in nick:
-        cl.conn.send('ERR Invalid character in nickname')
+        cl.conn.send(prepare('ERR Invalid character in nickname'))
         return
     else:
         old_nick = cl.nick
@@ -43,15 +51,14 @@ def change_nick(cl, nick):
         if cl.logged:
             s = "NFO "+old_nick+" is now known as "+nick
             print('Nouveau pseudo de {}: {}'.format(old_nick,nick))
-            #s = s.encode('utf-8')
             send_to_all(s)
         else:
             print('Le client {} a choisi le pseudo {}'.format(cl.ip,nick))
-            cl.conn.send(b"NFO Succesfully changed your nickname to "+nick.encode())
+            cl.conn.send(prepare("NFO Succesfully changed your nickname to "+nick))
         if OPEN and cl.logged == False:
             cl.logged = True
+            cl.conn.send(prepare('NFO You are now logged in'))
             send_to_all('NFO '+cl.nick+' joined the chat.')
-            cl.conn.send(b'NFO You are now logged in')
 
 
         
@@ -76,26 +83,34 @@ while consoleinput.continuer:
         if cl.isTalking():
             #print(cl.ip+" is talking!")
             try:
-                msg = cl.conn.recv(SIZE).decode('utf-8')
+                msg = cl.conn.recv(SIZE)
             except:
                 print("Recu un paquet bizarre, on kicke !")
                 cl.disconnect()
                 client.remove(cl)
-            #print(msg)
-
-            action, s = process_cmd(msg)
-            if action == DISC:
-                if cl.logged:
-                    send_to_all("NFO "+cl.nick+" left the chat.")
-                cl.disconnect()
-                client.remove(cl)
-            elif action == TOALL:
-                print(cl.nick+": "+s)
-                send_to_all(s,cl)
-            elif action == TOSELF:
-                cl.conn.send(s)
-            elif action == CHGNICK:
-                change_nick(cl,s)
+            queue = []
+            while msg != b'':
+                print(msg)
+                longueur = 256*msg[0]+msg[1]
+                if longueur > 1024:
+                    print('/!\\ Oddly long message incoming ({} bytes).'.format(longueur))
+                    print(msg)
+                queue.append(msg[2:longueur+2].decode('utf-8'))
+                msg = msg[longueur+2:]
+            for msg in queue:
+                action, s = process_cmd(msg)
+                if action == DISC:
+                    if cl.logged:
+                        send_to_all("NFO "+cl.nick+" left the chat.")
+                    cl.disconnect()
+                    client.remove(cl)
+                elif action == TOALL:
+                    print(cl.nick+": "+s)
+                    send_to_all(s,cl)
+                elif action == TOSELF:
+                    cl.conn.send(prepare(s))
+                elif action == CHGNICK:
+                    change_nick(cl,s)
 
 
 print("Arrêt du serveur")

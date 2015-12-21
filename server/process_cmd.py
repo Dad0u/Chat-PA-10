@@ -7,19 +7,16 @@ def process_cmd(msg):
         return DISC,None
     elif msg == "EXIT":
         return DISC,None
-
-    elif msg[:4] == "MSG ":
-        message = msg[4:]
-        return TOALL,message
-
-    elif msg[:4] == "NIK ":
-        return CHGNICK,msg[4:]
+    elif msg[:6] == "/nick ":
+        return CHGNICK,msg[6:]
 
     elif msg == "HELLO":
-        return TOSELF,b"HELLO"
+        return TOSELF,"HELLO"
 
-    elif msg[:4] == "PRV":
-        l = msg[4:].split("\\")
+    elif msg[:5] == "/msg ":
+        l = msg[5:].split("\\")
         pseudo = l[0]
         message = "\\".join(l[1:])
         return TOCLIENT,(pseudo,message)
+    else:
+        return TOALL,msg

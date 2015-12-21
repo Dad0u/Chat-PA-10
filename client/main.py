@@ -7,20 +7,18 @@ import select
 from interface import Fenetre
 from glob import *
 
-
 def auth(connection):
-    connection.send(b"HELLO")
+    connection.send(bytes([0,5])+b"HELLO")
     replying = select.select([connection],[],[],5)[0]
     if len(replying) == 0:
         print("Aucune réponse du serveur !")
         sys.exit(0)
     else:
         reply = replying[0].recv(SIZE)
-    if reply != b"HELLO":
+    if reply != bytes([0,5])+b"HELLO":
         print("Réponse invalide du serveur: "+reply.decode())
         sys.exit(0)
     print("Connection réussie")
-
 
 
 address = sys.argv[-1]

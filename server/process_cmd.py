@@ -5,7 +5,7 @@ from glob import *
 def process_cmd(msg):
     if len(msg) == 0:
         return DISC,None
-    elif msg == "EXIT":
+    elif msg == "/exit":
         return DISC,None
     elif msg[:6] == "/nick ":
         return CHGNICK,msg[6:]

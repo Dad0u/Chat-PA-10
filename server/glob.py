@@ -1,6 +1,6 @@
 ﻿# -*- coding:utf-8 -*-
 
-SIZE = 2048
+SIZE = 1024
 PORT = 1148
 
 OPEN = True

@@ -22,9 +22,19 @@ class Fetcher(Thread):
             #print(msg)
             while msg != b'':
                 longueur = 256*msg[0]+msg[1]
-                if longueur > 1024:
-                    print('/!\\ Oddly long message incoming ({} bytes).'.format(longueur))
-                    print(msg)
+                #if longueur > 1024:
+                #    print('/!\\ Oddly long message incoming ({} bytes).'.format(longueur))
+                #    print(msg)
+                while len(msg) < longueur+2:
+                    #print('Attente du paquet suivant, reçu {}/{} octets'.format(len(msg),longueur+2))
+                    demande = select.select([self.conn],[],[],3)[0]
+                    if len(demande) == 0:
+                        #print('Non reçu !')
+                        self.write('Warning: Message incomplet reçu !')
+                        longueur = len(msg) - 2
+                    else:
+                        msg = msg + self.conn.recv(SIZE)
+                    #print('reçu !')
                 queue.append(msg[2:longueur+2].decode('utf-8'))
                 msg = msg[longueur+2:]
             #print("Commandes du serveur: "+str(queue))

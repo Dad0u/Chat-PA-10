@@ -34,7 +34,7 @@ class Fenetre():
             self.close()
         else:
             s = s.encode('utf-8')
-            print(s)
+            #print(s)
             self.conn.send(bytes([len(s)//256,len(s)%256])+s)
 
     def receive(self, msg):
@@ -44,5 +44,5 @@ class Fenetre():
     def close(self):
         self.fetcher.stop()
         self.fetcher.join()
-        self.conn.send(bytes([0,5])+b'EXIT')
+        self.conn.send(bytes([0,5])+b'/exit')
         self.win.destroy()

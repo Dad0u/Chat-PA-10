@@ -88,6 +88,8 @@ while consoleinput.continuer:
                 print("Recu un paquet bizarre, on kicke !")
                 cl.disconnect()
                 client.remove(cl)
+            if len(msg) == 0:
+                cl.disconnect()
             queue = []
             while msg != b'':
                 print(msg)

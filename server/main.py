@@ -18,6 +18,13 @@ def prepare(s):
     s = bytes([len(s)//256,len(s)%256])+s
     return(s)
 
+def hello(client):
+    if client.connected:
+        client.conn.send(prepare('NFO You are already connected'))
+    else:
+        client.conn.send(prepare('HELLO'))
+        client.connected = True
+
 
 def send_to_all(msg, sender=None):
     if sender == None:
@@ -42,7 +49,7 @@ def change_nick(cl, nick):
     elif len(nick) < 3:
         cl.conn.send(prepare('ERR Nickname too short (at least 3 characters)'))
         return
-    elif "\\" in nick:
+    elif "\\" in nick or " " in nick:
         cl.conn.send(prepare('ERR Invalid character in nickname'))
         return
     else:
@@ -60,7 +67,39 @@ def change_nick(cl, nick):
             cl.conn.send(prepare('NFO You are now logged in'))
             send_to_all('NFO '+cl.nick+' joined the chat.')
 
+def private(msg, client, sender = None):
+    if sender == None:
+        client.conn.send(prepare("NFO "+msg))
+    else:
+        s = "MSG "+sender.nick+" (private)\\"+msg
+        client.conn.send(prepare(s))
+        s = "MSG [Private message to "+client.nick+"]\\"+msg
+        sender.conn.send(prepare(s))
 
+def find_client(nick):
+    for cl in client:
+        if cl.nick == nick:
+            return cl
+    return None
+
+def help(cl):
+    s = """List of available commands: 
+/nick <nick> - To set your nickname
+/help - To see this message
+/msg <user> <msg> - To send a private message to user
+/list - To get the list of current users
+/exit - To disconnect and leave"""
+    cl.conn.send(prepare('NFO '+s))
+
+def send_list(target):
+    s = ''
+    n = 0
+    for cl in client:
+        if cl.logged:
+            n+=1
+            s = s+cl.nick+"\n"
+    s = str(n)+" client(s) connected:\n"+s[:-1]
+    target.conn.send(prepare('NFO '+s))
         
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_serv.bind(('', PORT))
@@ -92,7 +131,7 @@ while consoleinput.continuer:
                 cl.disconnect()
             queue = []
             while msg != b'':
-                print(msg)
+                #print(msg)
                 longueur = 256*msg[0]+msg[1]
                 #if longueur > 1024:
                 #    print('/!\\ Oddly long message incoming ({} bytes).'.format(longueur))
@@ -119,10 +158,20 @@ while consoleinput.continuer:
                 elif action == TOALL:
                     print(cl.nick+" ("+cl.ip+"): "+s)
                     send_to_all(s,cl)
-                elif action == TOSELF:
-                    cl.conn.send(prepare(s))
+                elif action == HELLO:
+                    hello(cl)
                 elif action == CHGNICK:
                     change_nick(cl,s)
+                elif action == TOCLIENT:
+                    target = find_client(s[0])
+                    if target != None:
+                        private(s[1],target,cl)
+                    else:
+                        cl.conn.send(prepare("NFO User "+s[0]+" not found"))
+                elif action == HELP:
+                    help(cl)
+                elif action == LIST:
+                    send_list(cl)
 
 
 print("Arrêt du serveur")

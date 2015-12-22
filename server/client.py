@@ -5,6 +5,7 @@ import select
 class Client():
     def __init__(self, conn, ip, port):
         self.logged = False
+        self.connected = False
         self.ip = ip
         self.conn = conn
         self.port = port

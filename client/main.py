@@ -8,7 +8,7 @@ from interface import Fenetre
 from glob import *
 
 def auth(connection):
-    connection.send(bytes([0,5])+b"HELLO")
+    connection.send(bytes([0,6])+b"/HELLO")
     replying = select.select([connection],[],[],5)[0]
     if len(replying) == 0:
         print("Aucune réponse du serveur !")

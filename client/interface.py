@@ -14,6 +14,7 @@ class Fenetre():
         self.win.protocol("WM_DELETE_WINDOW", self.close) #Pour fermer proprement quand on clique sur la croix
         self.out_text = tk.Text(self.win)
         self.out_text.grid(row=0, sticky=tk.W+tk.E+tk.N+tk.S)
+        self.out_text.configure(state='disabled')
         self.in_text = tk.Entry(self.win)
         self.in_text.grid(row=1,sticky=tk.S+tk.W+tk.E)
         self.in_text.bind('<Return>',self.send)
@@ -39,7 +40,9 @@ class Fenetre():
 
     def receive(self, msg):
         print(msg)
+        self.out_text.configure(state='normal')
         self.out_text.insert(tk.END,msg+"\n")
+        self.out_text.configure(state='disabled')
 
     def close(self):
         self.fetcher.stop()

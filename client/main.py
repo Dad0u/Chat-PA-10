@@ -20,6 +20,9 @@ def auth(connection):
         sys.exit(0)
     print("Connection réussie")
 
+if sys.version_info.major == 2:
+    print("Ce programme est prévu pour fonctionner avec Python3 !")
+    sys.exit(-1)
 
 address = sys.argv[-1]
 connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

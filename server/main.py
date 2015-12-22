@@ -100,6 +100,12 @@ def send_list(target):
             s = s+cl.nick+"\n"
     s = str(n)+" client(s) connected:\n"+s[:-1]
     target.conn.send(prepare('NFO '+s))
+
+
+if sys.version_info.major == 2:
+    print("Ce programme est prévu pour fonctionner avec Python3 !")
+    sys.exit(-1)
+
         
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_serv.bind(('', PORT))

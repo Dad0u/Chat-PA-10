@@ -10,10 +10,7 @@ class ConsoleInput(Thread):
 
     def run(self):
         while self.continuer:
-            if sys.version_info.major == 2:
-                cmd = raw_input()
-            else:
-                cmd= input()
+            cmd = input()
             if cmd == "stop":
                 self.stop()
 

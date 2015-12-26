@@ -1,14 +1,15 @@
 ﻿# -*- coding:utf-8 -*-
 
-#from threading import Thread
+import sys
+if sys.version_info.major == 2:
+    print("Ce programme est prévu pour fonctionner avec Python3 !")
+    sys.exit(-1)
 import socket
 from client import Client
 from consoleInput import ConsoleInput
 from process_cmd import process_cmd
 from glob import *
-
 import select
-import sys
 
 def prepare(s):
     if len(s) > 2**16-3:
@@ -49,7 +50,7 @@ def change_nick(cl, nick):
     elif len(nick) < 3:
         cl.conn.send(prepare('ERR Nickname too short (at least 3 characters)'))
         return
-    elif "\\" in nick or " " in nick:
+    elif "\\" in nick:
         cl.conn.send(prepare('ERR Invalid character in nickname'))
         return
     else:
@@ -77,10 +78,23 @@ def private(msg, client, sender = None):
         sender.conn.send(prepare(s))
 
 def find_client(nick):
-    for cl in client:
-        if cl.nick == nick:
-            return cl
-    return None
+    words = nick.split(' ')
+    ret = []
+    for i in range(len(words)):
+        s = " ".join(words[:i+1])
+        for cl in client:
+            if cl.nick == s:
+                ret.append(cl)
+    if len(ret) == 0:
+        return None
+    elif len(ret) == 1:
+        return ret[0]
+    else:
+        longest = ret[0]
+        for i in ret:
+            if len(i.nick) > len(longest.nick):
+                longest = i
+        return longest
 
 def help(cl):
     s = """List of available commands: 
@@ -102,9 +116,6 @@ def send_list(target):
     target.conn.send(prepare('NFO '+s))
 
 
-if sys.version_info.major == 2:
-    print("Ce programme est prévu pour fonctionner avec Python3 !")
-    sys.exit(-1)
 
         
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -169,11 +180,17 @@ while consoleinput.continuer:
                 elif action == CHGNICK:
                     change_nick(cl,s)
                 elif action == TOCLIENT:
-                    target = find_client(s[0])
-                    if target != None:
-                        private(s[1],target,cl)
+                    target = find_client(s)
+                    if target == None:
+                        cl.conn.send(prepare("NFO User not found"))
+                    elif cl.auth == True:
+                        print("Private message from "+cl.nick+" to "+target.nick+": "+s[len(cl.nick)+5:])
+                        private(s[len(target.nick)+1:],target,cl)
                     else:
-                        cl.conn.send(prepare("NFO User "+s[0]+" not found"))
+                        if OPEN:
+                            sender.conn.send(prepare("ERR You must choose a nickname first, use /nick <nickname> to do so"))
+                        else:
+                            sender.conn.send(prepare("ERR You are not logged in."))
                 elif action == HELP:
                     help(cl)
                 elif action == LIST:

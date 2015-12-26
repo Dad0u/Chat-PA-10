@@ -50,6 +50,10 @@ class Fetcher(Thread):
                     self.write("Erreur: "+msg[4:])
                 elif msg[:3] == "NFO":
                     self.write("Info: "+msg[4:])
+                elif msg[:3] == "EXT":
+                    self.write("Déconnecté par le serveur !")
+                    self.conn.close()
+                    self.stop()
                 else:
                     self.write("Message inconnu du serveur: "+msg)
         print("Fin du fetcher")

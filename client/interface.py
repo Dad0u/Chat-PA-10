@@ -47,5 +47,8 @@ class Fenetre():
     def close(self):
         self.fetcher.stop()
         self.fetcher.join()
-        self.conn.send(bytes([0,5])+b'/exit')
+        try:
+            self.conn.send(bytes([0,5])+b'/exit')
+        except:
+            pass
         self.win.destroy()

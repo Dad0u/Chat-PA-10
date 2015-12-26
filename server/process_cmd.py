@@ -12,10 +12,7 @@ def process_cmd(msg):
     elif msg == "/HELLO":
         return HELLO,None
     elif msg[:5] == "/msg ":
-        l = msg[5:].split(" ")
-        pseudo = l[0]
-        message = " ".join(l[1:])
-        return TOCLIENT,(pseudo,message)
+        return TOCLIENT,msg[5:]
     elif msg == "/help":
         return HELP,None
     elif msg == "/list":

@@ -23,4 +23,5 @@ class Client():
 
     def disconnect(self):
         print("Deconnexion de "+self.nick)
+        self.conn.send(bytes([0,3])+b'EXT')
         self.conn.close()

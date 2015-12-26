@@ -23,5 +23,8 @@ class Client():
 
     def disconnect(self):
         print("Deconnexion de "+self.nick)
-        self.conn.send(bytes([0,3])+b'EXT')
+        try:
+            self.conn.send(bytes([0,3])+b'EXT')
+        except:
+            pass
         self.conn.close()

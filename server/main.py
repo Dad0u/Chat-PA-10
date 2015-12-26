@@ -129,13 +129,30 @@ consoleinput.start()
 
 print("Serveur lancé")
 while consoleinput.continuer:
-    new_conn = select.select([connection_serv],[],[],0.05)[0]
+
+    if len(consoleinput.queue) != 0:        #Interprète les commandes console du serveur
+        for s in consoleinput.queue:
+            if s[0] == "kick":
+                cl = find_client(s[1])
+                if cl != None:
+                    cl.disconnect()
+                    client.remove(cl)
+                else:
+                    print("Client not found: "+s[1])
+            elif s[0] == "list":
+                print("User list:")
+                for i in client:                    
+                    print(i.nick)
+            consoleinput.queue.remove(s)
+
+
+    new_conn = select.select([connection_serv],[],[],0.05)[0]   #Ajout des nouveaux clients
     for conn in new_conn:
         c,i = conn.accept()
         client.append(Client(c, *i))
         print("Nouveau client, IP: "+client[-1].ip)
 
-    for cl in client:
+    for cl in client:                               #Traitement des messages reçus.
         if cl.isTalking():
             #print(cl.ip+" is talking!")
             try:

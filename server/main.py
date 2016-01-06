@@ -26,7 +26,6 @@ def hello(client):
         client.conn.send(prepare('HELLO'))
         client.connected = True
 
-
 def send_to_all(msg, sender=None):
     if sender == None:
         s = prepare(msg)
@@ -115,9 +114,6 @@ def send_list(target):
     s = str(n)+" client(s) connected:\n"+s[:-1]
     target.conn.send(prepare('NFO '+s))
 
-
-
-        
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connection_serv.bind(('', PORT))
 connection_serv.listen(3)
@@ -212,7 +208,6 @@ while consoleinput.continuer:
                     help(cl)
                 elif action == LIST:
                     send_list(cl)
-
 
 print("Arrêt du serveur")
 consoleinput.join()

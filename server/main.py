@@ -1,6 +1,7 @@
 ﻿# -*- coding:utf-8 -*-
 """
 Programme par Victor Couty (victor@couty.eu)
+Serveur du programme de chat PA-10
 Utilisation python3 main.py [port]
 Taper help une fois le serveur lancé pour affiche la liste des commandes.
 """

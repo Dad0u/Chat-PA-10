@@ -20,6 +20,8 @@ class ConsoleInput(Thread):
                 self.queue.append(("list",None))
             elif cmd == "help":
                 print('Commands: stop, kick <user>, list, help')
+            elif cmd[:4] == "say ":
+                self.queue.append(("say",cmd[4:]))
             else:
                 print("Command not found, type help to have a list of available commands")
 

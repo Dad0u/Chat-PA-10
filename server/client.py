@@ -15,7 +15,10 @@ class Client():
         self.nick = nick
 
     def isTalking(self):
-        waiting = select.select([self.conn],[],[],0)[0]
+        try:
+            waiting = select.select([self.conn],[],[],0)[0]
+        except:
+            self.disconnect()
         if len(waiting) == 0:
             return False
         else:

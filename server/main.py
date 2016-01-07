@@ -135,7 +135,6 @@ consoleinput.start()
 
 print("Serveur lancé")
 while consoleinput.continuer:
-
     if len(consoleinput.queue) != 0:        #Interprète les commandes console du serveur
         for s in consoleinput.queue:
             if s[0] == "kick":
@@ -150,6 +149,8 @@ while consoleinput.continuer:
                 print("User list:")
                 for i in client:                    
                     print(i.nick)
+            elif s[0] == "say":
+                send_to_all("NFO "+s[1])
             consoleinput.queue.remove(s)
 
 
@@ -168,8 +169,10 @@ while consoleinput.continuer:
                 print("Recu un paquet bizarre, on kicke !")
                 cl.disconnect()
                 client.remove(cl)
+                msg = b''
             if len(msg) == 0:
                 cl.disconnect()
+                msg = b''
             queue = []
             while msg != b'':
                 #print(msg)

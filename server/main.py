@@ -131,6 +131,7 @@ while consoleinput.continuer:
             if s[0] == "kick":
                 cl = find_client(s[1])
                 if cl != None:
+                    send_to_all("NFO "+cl.nick+" was kicked by the server.")
                     cl.disconnect()
                     client.remove(cl)
                 else:

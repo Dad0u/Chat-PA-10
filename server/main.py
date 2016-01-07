@@ -197,7 +197,7 @@ while consoleinput.continuer:
                     target = find_client(s)
                     if target == None:
                         cl.conn.send(prepare("NFO User not found"))
-                    elif cl.connected == True:
+                    elif cl.logged:
                         print("Private message from "+cl.nick+" to "+target.nick+": "+s[len(cl.nick)+5:])
                         private(s[len(target.nick)+1:],target,cl)
                     else:

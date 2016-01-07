@@ -1,7 +1,7 @@
 ﻿# -*- coding:utf-8 -*-
 
 SIZE = 1024
-PORT = 1148
+DEFAULT_PORT = 1148
 
 OPEN = True
 

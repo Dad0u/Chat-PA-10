@@ -113,9 +113,14 @@ def send_list(target):
             s = s+cl.nick+"\n"
     s = str(n)+" client(s) connected:\n"+s[:-1]
     target.conn.send(prepare('NFO '+s))
+    
+try:
+    port = int(sys.argv[-1])
+except:
+    port = DEFAULT_PORT
 
 connection_serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-connection_serv.bind(('', PORT))
+connection_serv.bind(('', port))
 connection_serv.listen(3)
 continuer = True
 client = []

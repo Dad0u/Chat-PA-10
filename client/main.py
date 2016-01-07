@@ -21,9 +21,15 @@ def auth(connection):
         sys.exit(0)
     print("Connection réussie")
 
+port = DEFAULT_PORT
 address = sys.argv[-1]
+
+if ':' in address:
+    address,port = address.split(":")
+    port = int(port)
+    
 connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-connection.connect((address, PORT))
+connection.connect((address, port))
 auth(connection)
 fen = Fenetre(connection)
 fen.run()

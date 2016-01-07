@@ -29,7 +29,9 @@ def auth(connection):
     print("Connection réussie")
 
 port = DEFAULT_PORT
-address = sys.argv[-1]
+#address = sys.argv[-1]
+
+address = input("Adresse du serveur ? ")
 
 if ':' in address:
     address,port = address.split(":")

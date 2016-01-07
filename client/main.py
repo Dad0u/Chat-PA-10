@@ -1,4 +1,11 @@
 # -*- coding:utf-8 -*-
+"""
+Programme par Victor Couty (victor@couty.eu)
+Client du programme de chat PA-10
+Utilisation: python3 main.py ip[:port]
+Taper /help une fois le client connecté pour avoir la liste des commandes.
+NB: nécessite tkinter (apt-get install python3-tk)
+"""
 import sys
 if sys.version_info.major == 2:
     print("Ce programme est prévu pour fonctionner avec Python3 !")

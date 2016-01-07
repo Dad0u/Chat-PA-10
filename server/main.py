@@ -1,5 +1,9 @@
 ﻿# -*- coding:utf-8 -*-
-
+"""
+Programme par Victor Couty (victor@couty.eu)
+Utilisation python3 main.py [port]
+Taper help une fois le serveur lancé pour affiche la liste des commandes.
+"""
 import sys
 if sys.version_info.major == 2:
     print("Ce programme est prévu pour fonctionner avec Python3 !")

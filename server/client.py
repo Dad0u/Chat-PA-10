@@ -22,7 +22,10 @@ class Client():
             return True
 
     def disconnect(self):
-        print("Deconnexion de "+self.nick)
+        if self.logged:
+            print("Deconnexion de "+self.nick)
+        else:
+            print("Deconnexion du client non authentifié "+self.ip)
         try:
             self.conn.send(bytes([0,3])+b'EXT')
         except:

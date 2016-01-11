@@ -48,6 +48,7 @@ def send_to_all(msg, sender=None):
         cl.conn.send(s)
 
 def change_nick(cl, nick):
+    nick = nick.strip()
     if nick in [i.nick for i in client]:
         cl.conn.send(prepare('ERR Nickname already in use'))
         return
@@ -56,6 +57,9 @@ def change_nick(cl, nick):
         return
     elif "\\" in nick:
         cl.conn.send(prepare('ERR Invalid character in nickname'))
+        return
+    elif nick.lower() == "info":
+        cl.conn.send(prepare('ERR Don\'t try to fool me ;)'))
         return
     else:
         old_nick = cl.nick

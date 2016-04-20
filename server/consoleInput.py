@@ -19,7 +19,7 @@ class ConsoleInput(Thread):
             elif cmd == "list":
                 self.queue.append(("list",None))
             elif cmd == "help":
-                print('Commands: stop, kick <user>, list, help')
+                print('Commands: stop, kick <user>, list, help, say')
             elif cmd[:4] == "say ":
                 self.queue.append(("say",cmd[4:]))
             else:

@@ -2,6 +2,8 @@
 - Remove console (type server address in a window)
 - Add notification
 - Add client list panel
+- Limit nick length...
+- Add colors (for nicks and infos)
 - Add reconnexion option
-- Add bans (by ip ?) or identity generator ?
+- Add bans (by ip ?)
 - Add server programming capability (ex: if 3 renames in x seconds, kick user)

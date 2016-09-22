@@ -1,0 +1,7 @@
+- Add auto-scroll
+- Remove console (type server address in a window)
+- Add notification
+- Add client list panel
+- Add reconnexion option
+- Add bans (by ip ?) or identity generator ?
+- Add server programming capability (ex: if 3 renames in x seconds, kick user)

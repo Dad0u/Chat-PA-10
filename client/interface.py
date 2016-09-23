@@ -12,14 +12,18 @@ class Fenetre():
         self.win.grid_columnconfigure(0, weight=1)
         self.win.title('Chat PA-10')
         self.win.protocol("WM_DELETE_WINDOW", self.close) #Pour fermer proprement quand on clique sur la croix
-        self.out_text = tk.Text(self.win)
-        self.out_text.grid(row=0, sticky=tk.W+tk.E+tk.N+tk.S)
+        self.out_text = tk.Text(self.win,wrap=tk.WORD)
+        self.out_text.grid(row=0,column=0,columnspan=2,sticky=tk.W+tk.E+tk.N+tk.S)
         self.out_text.configure(state='disabled')
+        self.scrollbar = tk.Scrollbar(self.win)
+        self.scrollbar.grid(row=0,column=2, sticky = tk.E+tk.N+tk.S)
+        self.out_text.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.out_text.yview)
         self.in_text = tk.Entry(self.win)
-        self.in_text.grid(row=1,sticky=tk.S+tk.W+tk.E)
+        self.in_text.grid(row=1,column=0,sticky=tk.W+tk.E)
         self.in_text.bind('<Return>',self.send)
         self.send_button = tk.Button(command = self.send,text="Send")
-        self.send_button.grid(row=1, sticky=tk.SE)
+        self.send_button.grid(row=1,column=1,columnspan=2, sticky=tk.SE)
         self.fetcher = Fetcher(conn, self.receive)
 
     def run(self):
@@ -43,6 +47,7 @@ class Fenetre():
         self.out_text.configure(state='normal')
         self.out_text.insert(tk.END,msg+"\n")
         self.out_text.configure(state='disabled')
+        self.out_text.see(tk.END)
 
     def close(self):
         self.fetcher.stop()

@@ -1,7 +1,6 @@
 - Remove console (type server address in a window)
 - Add notification
 - Add client list panel
-- Limit nick length...
 - Add colors (for nicks and infos)
 - Add reconnexion option
 - Add bans (by ip ?)

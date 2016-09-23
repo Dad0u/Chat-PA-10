@@ -55,6 +55,9 @@ def change_nick(cl, nick):
     elif len(nick) < 3:
         cl.conn.send(prepare('ERR Nickname too short (at least 3 characters)'))
         return
+    elif len(nick) > 30:
+        cl.conn.send(prepare('ERR Nickname too long (max 30 characters)'))
+        return
     elif "\\" in nick:
         cl.conn.send(prepare('ERR Invalid character in nickname'))
         return

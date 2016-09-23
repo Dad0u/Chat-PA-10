@@ -19,6 +19,7 @@ class Client():
             waiting = select.select([self.conn],[],[],0)[0]
         except:
             self.disconnect()
+            return
         if len(waiting) == 0:
             return False
         else:

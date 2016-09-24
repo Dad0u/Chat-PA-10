@@ -25,6 +25,8 @@ class Fenetre():
         self.send_button = tk.Button(command = self.send,text="Send")
         self.send_button.grid(row=1,column=1,columnspan=2, sticky=tk.SE)
         self.fetcher = Fetcher(conn, self.receive)
+        for color in [RED,ORANGE,GREEN]:
+          self.out_text.tag_config(color,foreground=color)
 
     def run(self):
         self.fetcher.start()
@@ -42,9 +44,10 @@ class Fenetre():
             #print(s)
             self.conn.send(bytes([len(s)//256,len(s)%256])+s)
 
-    def receive(self, msg):
+    def receive(self, header, msg, color):
         print(msg)
         self.out_text.configure(state='normal')
+        self.out_text.insert(tk.END,header+": ",color)
         self.out_text.insert(tk.END,msg+"\n")
         self.out_text.configure(state='disabled')
         self.out_text.see(tk.END)

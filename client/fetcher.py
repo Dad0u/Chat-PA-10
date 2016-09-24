@@ -30,7 +30,7 @@ class Fetcher(Thread):
                     demande = select.select([self.conn],[],[],3)[0]
                     if len(demande) == 0:
                         #print('Non reçu !')
-                        self.write('Warning: Message incomplet reçu !')
+                        self.write('Warning','Message incomplet reçu !',RED)
                         longueur = len(msg) - 2
                     else:
                         msg = msg + self.conn.recv(SIZE)
@@ -45,17 +45,17 @@ class Fetcher(Thread):
                     l = msg[4:].split("\\")
                     pseudo = l[0]
                     message = "\\".join(l[1:])
-                    self.write(pseudo+": "+message)
+                    self.write(pseudo,message,GREEN)
                 elif msg[:3] == "ERR":
-                    self.write("Erreur: "+msg[4:])
+                    self.write("Erreur",msg[4:],RED)
                 elif msg[:3] == "NFO":
-                    self.write("Info: "+msg[4:])
+                    self.write("Info",msg[4:],ORANGE)
                 elif msg[:3] == "EXT":
-                    self.write("Déconnecté par le serveur !")
+                    self.write("Info","Déconnecté par le serveur !",ORANGE)
                     self.conn.close()
                     self.stop()
                 else:
-                    self.write("Message inconnu du serveur: "+msg)
+                    self.write("Erreur","Message inconnu du serveur: "+msg,RED)
         print("Fin du fetcher")
 
     def stop(self):
